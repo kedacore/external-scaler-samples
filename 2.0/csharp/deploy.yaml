@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: csharp-external-scaler
+  namespace: csharp-external-scaler-ns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: csharp-external-scaler
+  template:
+    metadata:
+      labels:
+        app: csharp-external-scaler
+    spec:
+      containers:
+      - name: scaler
+        image: csharp-external-scaler:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: csharp-external-scaler
+  namespace: csharp-external-scaler-ns
+spec:
+  ports:
+  - port: 5000
+    targetPort: 5000
+  selector:
+    app: csharp-external-scaler
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-1
+  namespace: csharp-external-scaler-ns
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: test-1
+  template:
+    metadata:
+      labels:
+        app: test-1
+    spec:
+      containers:
+      - name: http
+        image: nginx:latest
+        imagePullPolicy: Always
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: test-1
+  namespace: csharp-external-scaler-ns
+spec:
+  scaleTargetRef:
+    name: test-1
+  pollingInterval: 20
+  triggers:
+    - type: external
+      metadata:
+        scalerAddress: csharp-external-scaler.csharp-external-scaler-ns:5000
