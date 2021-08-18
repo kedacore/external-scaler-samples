@@ -5,5 +5,5 @@
 
 This repository provides a sample external scaler based on this guide https://keda.sh/docs/2.0/concepts/external-scalers/
 
-We are a Cloud Native Computing Foundation (CNCF) sandbox project.
+We are a Cloud Native Computing Foundation (CNCF) incubation project.
 ![CNCF Logo](https://raw.githubusercontent.com/kedacore/keda/master/images/logo-cncf.svg)
